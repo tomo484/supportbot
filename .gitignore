@@ -45,3 +45,9 @@ venv.bak/
 *.sqlite
 *.db
 
+# Next.js
+frontend/.next/
+frontend/out/
+frontend/node_modules/
+frontend/pnpm-lock.yaml
+

@@ -1,176 +1,151 @@
-# Customer Support Agent
+# Customer Support Agent - Web Application
 
-Swiss Airlines向けのAIカスタマーサポートチャットボット。フライト、ホテル、レンタカー、エクスカーションの検索・予約・変更・キャンセルをサポートします。
+AI-powered customer support chatbot for Swiss Airlines with a modern web interface.
 
-## 技術スタック
-
-### バックエンド
-- **Python 3.12+**
-- **FastAPI**: WebSocketベースのリアルタイムAPI
-- **LangGraph**: ステートフルな会話エージェント
-- **LangChain**: LLMオーケストレーション
-- **SQLite**: 予約データベース
-
-### フロントエンド
-- **Next.js**: ReactベースのモダンなチャットUI
-- **WebSocket**: リアルタイム双方向通信
-
-## プロジェクト構造
+## 🏗️ Architecture
 
 ```
 customersupport/
-├── backend/
-│   ├── main.py              # FastAPI + WebSocketサーバー
-│   ├── chatbot.py           # 既存のチャットボットロジック（API化）
-│   ├── db.py                # データベース操作
-│   └── tool/                # チャットボットツール群
-│       ├── flights.py
-│       ├── hotels.py
-│       ├── carrental.py
-│       ├── exection.py
-│       ├── company-policy.py
-│       └── utils.py
-├── frontend/                # Next.jsアプリケーション
-│   ├── app/
-│   │   ├── page.tsx         # チャットUI
-│   │   └── layout.tsx
-│   └── package.json
-├── .env                     # 環境変数（APIキー）
-├── requirements.txt         # Python依存関係
-└── README.md
+├── backend/          # FastAPI + WebSocket Server
+│   ├── main.py      # WebSocket endpoint
+│   ├── chatbot.py   # LangGraph agent logic
+│   ├── db.py        # Database utilities
+│   └── tool/        # Agent tools (flights, hotels, etc.)
+│
+└── frontend/         # Next.js + TypeScript + TailwindCSS
+    └── src/
+        ├── app/          # Pages
+        ├── components/   # UI components
+        ├── hooks/        # WebSocket hook
+        └── types/        # TypeScript types
 ```
 
-## セットアップ
+## 🚀 Quick Start
 
-### 1. バックエンドのセットアップ
+### Prerequisites
 
-```bash
-# 仮想環境の作成とアクティベート
-python3 -m venv .venv
-source .venv/bin/activate
+- Python 3.12+
+- Node.js 20+
+- pnpm
 
-# 依存パッケージのインストール
-pip install -r requirements.txt
-```
-
-### 2. 環境変数の設定
-
-`.env`ファイルに以下を設定:
-
-```env
-OPENAI_API_KEY=your_openai_api_key
-TAVILY_API_KEY=your_tavily_api_key
-```
-
-### 3. バックエンドの起動
+### 1. Backend Setup
 
 ```bash
 cd backend
-uvicorn main:app --reload --host 0.0.0.0 --port 8000
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Set up environment variables
+cp ../.env.example ../.env
+# Edit .env with your API keys (OpenAI, Tavily, etc.)
+
+# Run the server
+python main.py
 ```
 
-### 4. フロントエンドのセットアップと起動
+The backend will start on `http://localhost:8000`
+
+### 2. Frontend Setup
 
 ```bash
 cd frontend
+
+# Install dependencies
 pnpm install
+
+# Run the development server
 pnpm dev
 ```
 
-ブラウザで `http://localhost:3000` にアクセス
+The frontend will start on `http://localhost:3000`
 
-## API仕様
+## 📋 Environment Variables
 
-### WebSocket エンドポイント
+Create a `.env` file in the project root:
 
-**`ws://localhost:8000/ws/{session_id}`**
-
-#### クライアント → サーバー
-
-```json
-{
-  "type": "message",
-  "content": "What time is my flight?",
-  "passenger_id": "3442 587242"
-}
+```env
+OPENAI_API_KEY=your_openai_api_key
+ANTHROPIC_API_KEY=your_anthropic_api_key
+TAVILY_API_KEY=your_tavily_api_key
 ```
 
-または、sensitive_toolsの承認時:
+## 🎨 Features
 
-```json
-{
-  "type": "approval",
-  "approved": true,
-  "reason": "optional rejection reason"
-}
-```
+### ✅ Implemented (Phase 1 & 2)
 
-#### サーバー → クライアント
+- **Backend (FastAPI + WebSocket)**
+  - Real-time bidirectional communication
+  - Session management
+  - Sensitive tool approval flow
+  - Error handling and reconnection
+  
+- **Frontend (Next.js + React)**
+  - ChatGPT-like UI
+  - Real-time messaging
+  - Approval dialog for sensitive operations
+  - Connection status indicator
+  - Auto-scroll and typing indicator
+  - Responsive design
 
-通常のメッセージ:
-```json
-{
-  "type": "message",
-  "content": "Your flight is at 3:00 PM...",
-  "role": "assistant"
-}
-```
+### 🔧 Agent Capabilities
 
-承認リクエスト（sensitive_tools実行前）:
-```json
-{
-  "type": "approval_request",
-  "tool_name": "update_ticket_to_new_flight",
-  "tool_args": {...},
-  "message": "Do you approve this action?"
-}
-```
+The AI agent can help with:
+- ✈️ Flight search and booking
+- 🏨 Hotel reservations
+- 🚗 Car rental bookings
+- 🎫 Excursion recommendations
+- 📋 Company policy lookups
+- 🔄 Modify/cancel existing reservations
 
-エラー:
-```json
-{
-  "type": "error",
-  "message": "Error description"
-}
-```
+**Sensitive Operations** (require user approval):
+- Updating flight tickets
+- Canceling bookings
+- Making new reservations
 
-## 主な機能
+## 🛠️ Tech Stack
 
-### チャットボット機能
-- ✅ フライト情報の検索・確認
-- ✅ フライトの変更・キャンセル
-- ✅ ホテルの検索・予約・変更・キャンセル
-- ✅ レンタカーの検索・予約・変更・キャンセル
-- ✅ エクスカーション（観光）の検索・予約
-- ✅ 会社ポリシーの検索
-- ✅ Web検索（Tavily）
+### Backend
+- **FastAPI**: Modern async web framework
+- **WebSocket**: Real-time communication
+- **LangGraph**: Agent orchestration
+- **LangChain**: LLM integration
+- **OpenAI GPT-4**: Language model
+- **SQLite**: Database
 
-### セキュリティ機能
-- **Safe Tools**: 検索・情報取得（自動実行）
-- **Sensitive Tools**: 予約変更・キャンセル（ユーザー承認が必要）
+### Frontend
+- **Next.js 14**: React framework (App Router)
+- **TypeScript**: Type safety
+- **TailwindCSS**: Styling
+- **WebSocket API**: Real-time communication
 
-## 開発
+## 📝 Development Notes
 
-### バックエンドの開発
+### Design Principles
 
-既存の`chatbot.py`のロジックを最大限活用。`part_1_graph`をそのままWebSocket経由で利用します。
+1. **Minimal Code**: Reuse existing `chatbot.py` logic
+2. **No Redundancy**: Single source of truth for agent logic
+3. **Simple Architecture**: Direct WebSocket communication
+4. **Clean Separation**: Backend/Frontend clearly separated
 
-### フロントエンドの開発
+### Project Structure
 
-シンプルなチャットUIを実装:
-- メッセージ送信フォーム
-- メッセージ履歴表示
-- 承認ダイアログ（sensitive_tools用）
+- **Backend**: All agent logic, tools, and database operations
+- **Frontend**: Pure UI layer, no business logic
+- **Communication**: WebSocket with JSON messages
 
-## 今後の拡張
+## 🧪 Testing (Phase 3)
 
-- [ ] Redis統合（セッション永続化・パフォーマンス向上）
-- [ ] ユーザー認証
-- [ ] 複数言語対応
-- [ ] 音声入力対応
-- [ ] チャット履歴のエクスポート
+See `Todo.md` for the testing plan.
 
-## ライセンス
+## 📄 License
 
 MIT
 
+## 🤝 Contributing
+
+This is a tutorial project. Feel free to fork and modify!
+
+---
+
+**Note**: This project is based on LangGraph tutorials and adapted for a web interface.
