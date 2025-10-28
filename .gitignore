@@ -1,0 +1,47 @@
+# プロジェクト固有の除外ファイル
+docs/
+Todo.md
+
+# Python関連
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# 環境変数
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDEとエディタ
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# データベースファイル（必要に応じて）
+*.sqlite
+*.db
+
