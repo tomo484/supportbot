@@ -2,7 +2,7 @@
 
 AI-powered customer support chatbot for Swiss Airlines with a modern web interface.
 
-## 🏗️ Architecture
+## 🏗️ Project Architecture
 
 ```
 customersupport/
